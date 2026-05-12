@@ -25,6 +25,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
 
 
+        $middleware->redirectGuestsTo(function () {
+            return null;
+        });
+
+
         $middleware->alias([
             'email.verified.api' => EmailIsVerified::class,
             'account.active' => EnsureAccountIsActive::class,
