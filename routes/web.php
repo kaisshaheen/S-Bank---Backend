@@ -14,9 +14,7 @@ Route::post('/register' , [AuthController::class , 'register']);
 Route::post('/login' , [AuthController::class , 'login']);
 Route::post('/logout' , [AuthController::class , 'logout'])->middleware(["auth:sanctum"]);
 
-Route::get('/test-session', function () {
-    return session()->all();
-});
+Route::get('/test-session', fn () => 'OK');
 
 //verify the user's email
 Route::get('/email/verify/{id}/{hash}', [VerificationEmailController::class , 'verify'])->middleware(['signed' ])->name('verification.verify');
