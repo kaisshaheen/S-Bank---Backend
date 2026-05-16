@@ -24,13 +24,15 @@ class AuthController extends Controller
         $field = $request->validated();
 
         $user = $this->registerUserService->handle($field);
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         dispatch(new SendVerificationEmail($user));
 
         Auth::login($user);
 
         return response()->json([
-            'user' => $user
+            'user' => $user,
+            'token' => $token,
         ] , 201);
     }
 
@@ -43,9 +45,8 @@ class AuthController extends Controller
             ], 401);
         }   
 
-        $request->session()->regenerate();
-
         $user = Auth::user();
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'user' => [
@@ -58,10 +59,7 @@ class AuthController extends Controller
 
     public function logout(Request $request){
        
-        Auth::guard('web')->logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $request->user()->currentAccessToken()->delete();
         
         return response()->json([
             'message'=>'Logged out successfully'

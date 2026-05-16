@@ -9,6 +9,7 @@ use App\Http\Middleware\EnsureNoActiveLoan;
 use App\Http\Middleware\EnsureUserHasAccount;
 use App\Http\Middleware\EnsureUserHasNoAccount;
 use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\VerifiedEmail;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
@@ -29,6 +30,8 @@ return Application::configure(basePath: dirname(__DIR__))
             return null;
         });
 
+        $middleware->append(SecurityHeaders::class);
+
 
         $middleware->alias([
             'email.verified.api' => EmailIsVerified::class,
@@ -40,10 +43,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'role.admin' => EnsureUserIsAdmin::class,
             'no.verified.email' => VerifiedEmail::class,
             'check.banned' => CheckUserBanned::class,
+
         ]);
 
         $middleware->group('api', [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
     })

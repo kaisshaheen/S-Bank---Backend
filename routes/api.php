@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminLoanController;
 use App\Http\Controllers\AdminTransactionController;
 use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ResetPasswordController;
@@ -24,6 +25,12 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     ]);
 });
 
+//Auth
+Route::post('/register' , [AuthController::class , 'register']);
+Route::post('/login' , [AuthController::class , 'login']);
+Route::post('/logout' , [AuthController::class , 'logout'])->middleware(["auth:sanctum"]);
+
+
 
 
 Route::post('/forgot-password', [ResetPasswordController::class, 'sendResetLink']);
@@ -33,6 +40,10 @@ Route::middleware(['auth:sanctum' , 'no.verified.email'])->group(function () {
     //resend verfication email
     Route::post('/email/verification-notification', [VerificationEmailController::class , 'resendEmail'])->middleware('throttle:6,1');
 });
+
+
+//verify the user's email
+Route::get('/email/verify/{id}/{hash}', [VerificationEmailController::class , 'verify'])->middleware(['signed' ])->name('verification.verify');
 
 
 ////////
