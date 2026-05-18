@@ -22,6 +22,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
         'name'  => $request->user()->name,
         'email' => $request->user()->email,
         'role'  => $request->user()->role,
+        'verified' => $request->user()->verified_at ,
     ]);
 });
 
