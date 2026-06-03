@@ -21,10 +21,12 @@ class AccountFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'account_number' => 'ACC-' . $this->faker->unique()->numerify('#########'),
+            'account_number' => 'ACC-' . $this->faker->unique()->numberBetween(100000000, 999999999),
+            'national_number' => $this->faker->unique()->numerify('###########'), // 11 digits
             'balance' => 10000,
             'status' => $this->faker->randomElement(['active','frozen','closed']),
             'type' => $this->faker->randomElement(['saving','current']),
+            'password'=> $this->faker->password(8)
         ];
     }
 }

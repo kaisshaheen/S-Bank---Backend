@@ -36,7 +36,7 @@ class AdminLoanController extends Controller
 
         $userId = $loan->account->user_id;
 
-        $action === 'approve' ? $loan->update(['status' => 'active']) : $loan->update(['status' => 'rejected']);
+        $action === 'approve' ? $loan->update(['status' => 'approved']) : $loan->update(['status' => 'rejected']);
     
 
         Cache::forget("user:{$userId}:account");

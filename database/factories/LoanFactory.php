@@ -28,6 +28,7 @@ class LoanFactory extends Factory
             'duration_months'  => $months,
             'total_payable'    => $totalPayable,
             'status'           => 'pending',
+            'purpose'          => 'personal',
         ];
     }
 

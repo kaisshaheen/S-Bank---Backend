@@ -18,13 +18,15 @@ class EnsureNoActiveLoan
 
         $account = $request->user()->account;
 
-        $hasLoan = $account->loans()->whereIn('status',['pending' , 'active'])->exists();
+        $hasLoan = $account->loans()->whereIn('status',['pending', 'approved'])->exists();
 
-        if($hasLoan)
+        if($hasLoan){
             return response()->json([
-                'message' => 'You already have pending or active loan'
-            ]);
-
-        return $next($request);
+                'message' => 'You already have pending or approved loan'
+            ],403);
+        }else{
+            return $next($request);
+        }
+            
     }
 }

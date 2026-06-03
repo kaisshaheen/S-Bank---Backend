@@ -33,7 +33,7 @@ class WithdrawService{
             AccountCache::clear($account);    
 
             $this->transactionRepo->create([
-                'to_account_id'=>$account->id,
+                'from_account_id'=>$account->id,
                 'amount'=>$amount,
                 'type'=>'withdraw',
                 'status'=>'success',

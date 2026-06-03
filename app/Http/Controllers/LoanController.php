@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\InstallmentAlreadyPaidException;
+use App\Exceptions\InsufficientBalanceException;
 use App\Http\Requests\LoanRequest;
 use App\Models\Loan;
 use App\Models\LoanInstallment;
@@ -10,7 +12,7 @@ use App\Services\Loan\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-
+use Illuminate\Support\Facades\Log;
 
 class LoanController extends Controller
 {
@@ -26,7 +28,7 @@ class LoanController extends Controller
 
         return Cache::remember(
             "user:{$user->id}:loans",
-            1000,
+            300,
             fn() => $user->account->loans()->with('installments')->latest()->first() // Assuming one loan per account for simplicity
         );
     }
@@ -57,11 +59,19 @@ class LoanController extends Controller
 
     public function payInstallment(LoanInstallment $installment){
         
-        $this->payment->handle($installment);//pay Installment service
-
-
-        return response()->json(['message' => 'Installment paid']);
-        
+        try {
+            $this->payment->handle($installment);
+            return response()->json(['message' => 'Installment paid successfully']);
+        } catch (InstallmentAlreadyPaidException $e) {
+            Log::info('Caught InstallmentAlreadyPaidException');
+            return response()->json(['message' => 'Installment already paid'], 422);
+        } catch (InsufficientBalanceException $e) {
+            Log::info('Caught InsufficientBalanceException');
+            return response()->json(['message' => 'Insufficient balance'], 422);
+        } catch (\Exception $e) {
+            Log::info('Caught Exception: ' . $e->getMessage());
+            return response()->json(['message' => $e->getMessage()], 422);
+    }
     }
 
 }

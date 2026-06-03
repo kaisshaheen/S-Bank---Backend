@@ -12,6 +12,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\StatementController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\UserSettingsController;
 use App\Http\Controllers\VerificationEmailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -19,10 +20,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return response()->json([
-        'name'  => $request->user()->name,
-        'email' => $request->user()->email,
-        'role'  => $request->user()->role,
-        'verified' => $request->user()->verified_at ,
+        "user" => [
+            'name'  => $request->user()->name,
+            'email' => $request->user()->email,
+            'role'  => $request->user()->role,
+            'verified' => $request->user()->email_verified_at ,
+        ]
     ]);
 });
 
@@ -55,13 +58,17 @@ Route::middleware(['auth:sanctum' , 'email.verified.api' , 'check.banned'])->gro
     Route::post('/account/login' , [AccountController::class , 'loginToAccount'])->middleware('has.account');
     Route::get('/account' , [AccountController::class , 'myAccount'])->middleware('has.account');
 
-    //Transcation
+    //Transaction
     Route::middleware(['has.account' , 'account.active'])->group(function(){
-        Route::post('/transcation/deposit' , [TransactionController::class , 'deposit']);
-        Route::post('/transcation/withdraw' , [TransactionController::class , 'withdraw']);
-        Route::post('/transcation/transfer' , [TransactionController::class , 'transfer']);
-        Route::get('/transcation/history' , [TransactionController::class , 'history']);
+        Route::post('/transaction/deposit' , [TransactionController::class , 'deposit']);
+        Route::post('/transaction/withdraw' , [TransactionController::class , 'withdraw']);
+        Route::post('/transaction/transfer' , [TransactionController::class , 'transfer']);
+        Route::get('/transaction/history' , [TransactionController::class , 'history']);
     });
+
+    //Settings
+    Route::patch('/settings/name',     [UserSettingsController::class, 'updateName']);
+    Route::patch('/settings/password', [UserSettingsController::class, 'updatePassword']);
 
     
     //Laon
